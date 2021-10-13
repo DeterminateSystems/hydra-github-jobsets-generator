@@ -31,9 +31,9 @@ jobs:
       - name: Terraform fmt
         run: nix-shell --run 'terraform fmt -check -recursive ./terraform'
       - name: Terraform init
-        run: nix-shell --run 'terraform -chdir ./terraform init'
+        run: nix-shell --run 'terraform -chdir=./terraform init'
       - name: Terraform validate
-        run: nix-shell --run 'terraform -chdir ./terraform validate -no-color'
+        run: nix-shell --run 'terraform -chdir=./terraform validate -no-color'
 
   Python:
     runs-on: ubuntu-latest
