@@ -7,8 +7,8 @@ resource "hydra_project" "pr-example" {
   visible      = true
 
   declarative {
-      file = ".hydra/project.json"
-      type = "git"
-      value = "https://github.com/DeterminateSystems/hydra-github-jobsets-example-project.git main"
+    file  = ".hydra/project.json"
+    type  = "git"
+    value = "https://github.com/DeterminateSystems/hydra-github-jobsets-example-project.git main"
   }
 }
