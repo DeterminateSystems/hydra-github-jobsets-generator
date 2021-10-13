@@ -16,30 +16,36 @@ def argument_parser():
         help="Path to the file containing pull request data.",
     )
     parser.add_argument(
+        "--template",
+        dest="template",
+        type=str,
+        help="Input template.  Incompatible with --flakes.",
+    )
+    parser.add_argument(
         "--flakes",
         dest="use_flakes",
         action="store_true",
-        help="Generate declarative flakes",
+        help="Generate declarative flakes. Incompatible with --template.",
     )
     parser.add_argument(
         "--check_interval",
         default=300,
-        help="Generate declarative flakes",
+        help="Number of seconds between each Hydra evaluation of the generated jobs.",
     )
     parser.add_argument(
         "--scheduling_shares",
         default=1,
-        help="Generate declarative flakes",
-    )
-    parser.add_argument(
-        "--email_override",
-        default="",
-        help="Generate declarative flakes",
+        help="How many shares each generated job should have.",
     )
     parser.add_argument(
         "--email_enable",
         action="store_true",
-        help="Generate declarative flakes",
+        help="Enable sending email for broken jobs.",
+    )
+    parser.add_argument(
+        "--email_override",
+        default="",
+        help="The email address to send mail to for your project's changes.",
     )
     parser.add_argument(
         "--email_responsible",
@@ -49,23 +55,17 @@ def argument_parser():
     parser.add_argument(
         "--keep_evalutions",
         default=3,
-        help="Generate declarative flakes",
+        help="How many evaluations to keep GC rooted on Hydra.",
     )
     parser.add_argument(
         "--input_name",
         default="src",
-        help="Generate declarative flakes",
+        help="Name of the project's input.",
     )
     parser.add_argument(
         "--input_path",
         default="default.nix",
-        help="Generate declarative flakes",
-    )
-    parser.add_argument(
-        "--template",
-        dest="template",
-        type=str,
-        help="Input template.",
+        help="Path to the .nix file within your project's directory which defines jobs.",
     )
 
     return parser
