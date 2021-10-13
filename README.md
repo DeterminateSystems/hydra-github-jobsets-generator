@@ -2,7 +2,7 @@
 
 This tool uses Hydra's _declarative jobsets_ to automatically create Hydra jobsets for your GitHub project.
 
-Configuring declarative jobsets use several points of indirection, and this repository's goal is to simplify and the setup process.
+Configuring declarative jobsets use several points of indirection, and this repository's goal is to simplify and streamline the setup process.
 
 ## How Declarative Jobsets Work
 
@@ -70,7 +70,7 @@ Take care to replace both `YOURORGNAME` and `YOURREPONAME` with your GitHub orga
 
 ### Configuring your repository: inputs
 
-Then, create a file at `.hydra/inputs.json`, and include all of the Hydra inputs you want in addition to your project's code.
+Then, create a file at `.hydra/inputs.json`, and include all of the other Hydra inputs you want to use.
 
 For example, if your project depends on Nixpkgs, write the following to `.hydra/inputs.json`:
 
@@ -88,7 +88,7 @@ If your project has no other inputs, write `{}` to the file.
 
 ### Configuring your Hydra
 
-Create a project on your Hydra which uses declarative input of typee `git`, and the file pointing to the `.hydra/project.json`.
+Create a project on your Hydra which uses a declarative input of type `git` with the file pointing to `.hydra/project.json`.
 
 If you use the [Terraform Hydra provider](https://registry.terraform.io/providers/DeterminateSystems/hydra/latest), it would look like this:
 
@@ -111,4 +111,4 @@ resource "hydra_project" "pr-example" {
 
 ### Recap
 
-When the `.jobsets` jobset evaluates and builds you should now see a jobset for every open PR. This jobset will re-evaluate every 300 seconds (5 minutes.)
+When the `.jobsets` jobset evaluates and builds you should now see a jobset for every open PR. This jobset will re-evaluate every 300 seconds (5 minutes).
