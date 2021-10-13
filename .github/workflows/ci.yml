@@ -19,3 +19,18 @@ jobs:
     - uses: codespell-project/codespell-problem-matcher@v1
     - name: Check Spelling
       run: nix develop --command codespell .
+
+  Terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Nix
+        uses: cachix/install-nix-action@v14
+      - name: Terraform fmt
+        run: nix-shell --run 'terraform fmt -check -recursive ./terraform'
+      - name: Terraform init
+        run: nix-shell --run 'terraform init ./terraform'
+      - name: Terraform validate
+        run: nix-shell --run 'terraform validate -no-color ./terraform'
