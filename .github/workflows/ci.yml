@@ -49,7 +49,7 @@ jobs:
     - name: Check Mypy
       run: nix develop --command mypy .
     - name: Check Flake8
-      run: nix develop --command flake8 --max-line-length 88 .
+      run: nix develop --command flake8 --max-line-length 89 .
     - name: Check Black
       run: nix develop --command black .
 
