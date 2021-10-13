@@ -31,8 +31,13 @@
         ({ pkgs, ... }:
           pkgs.mkShell {
             buildInputs = with pkgs; [
+              jq
               nixpkgs-fmt
+              python3
               shellcheck
+              python3.pkgs.flake8
+              python3.pkgs.black
+              python3.pkgs.mypy
               (terraform_1_0.withPlugins (p: [
                 p.hydra
               ]))
