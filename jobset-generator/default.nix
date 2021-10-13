@@ -6,6 +6,6 @@ pkgs.poetry2nix.mkPoetryApplication {
     homepage = "https://github.com/DeterminateSystems/hydra-github-project";
     description = "Declaratively generate jobsets for all a project's branches and PRs.";
     license = licenses.mit;
-    maintainers = teams.DeterminateSystems;
+    maintainers = teams.determinatesystems.members;
   };
 }

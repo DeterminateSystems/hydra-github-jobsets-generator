@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import json
 from typing import Dict, Optional, Callable
 from pprint import pprint  # noqa

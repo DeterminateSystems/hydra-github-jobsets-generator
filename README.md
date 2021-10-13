@@ -1,6 +1,6 @@
 # Generate declarative jobsets for Hydra for a GitHub Project
 
-This tool uses Hydra's _declarative jobsets_ to automatically create Hydra jobsets for your GitHub project.
+This tool uses Hydra's [_declarative jobsets_](https://github.com/NixOS/hydra/blob/master/doc/manual/src/plugins/declarative-projects.md) to automatically create Hydra jobsets for your GitHub project.
 
 Configuring declarative jobsets use several points of indirection, and this repository's goal is to simplify and streamline the setup process.
 
@@ -92,7 +92,7 @@ Create a project on your Hydra which uses a declarative input of type `git` with
 
 If you use the [Terraform Hydra provider](https://registry.terraform.io/providers/DeterminateSystems/hydra/latest), it would look like this:
 
-```
+```terraform
 resource "hydra_project" "pr-example" {
   name         = "pr-example"
   display_name = "PR Example"
