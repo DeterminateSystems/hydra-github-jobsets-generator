@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  Spelling:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
+        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - uses: codespell-project/codespell-problem-matcher@v1
+    - name: Check Spelling
+      run: nix develop --command codespell --ignore-words-list pullrequest .
+
+  Terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Nix
+        uses: cachix/install-nix-action@v14
+      - name: Terraform fmt
+        run: nix-shell --run 'terraform fmt -check -recursive ./terraform'
+      - name: Terraform init
+        run: nix-shell --run 'terraform -chdir=./terraform init'
+      - name: Terraform validate
+        run: nix-shell --run 'terraform -chdir=./terraform validate -no-color'
+
+  Python:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
+        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - name: Check Mypy
+      run: nix develop --command mypy .
+    - name: Check Flake8
+      run: nix develop --command flake8 --max-line-length 89 .
+    - name: Check Black
+      run: nix develop --command black .
+
+
+  Nix:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
+        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - name: Check Formatting
+      run: nix develop --command nixpkgs-fmt .
+
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v14
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
+        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - name: Check Formatting
+      run: nix build -L .#generator.x86_64-linux
