@@ -31,6 +31,7 @@
         ({ pkgs, ... }:
           pkgs.mkShell {
             buildInputs = with pkgs; [
+              codespell
               nixpkgs-fmt
               shellcheck
               (terraform_1_0.withPlugins (p: [
