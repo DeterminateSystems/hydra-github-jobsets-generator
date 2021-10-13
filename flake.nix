@@ -27,22 +27,26 @@
     {
       pkgs = forAllSystems ({ pkgs, ... }: pkgs);
 
+      generator = forAllSystems
+        ({ pkgs, ... }: import ./jobset-generator { inherit pkgs; });
+
       devShell = forAllSystems
         ({ pkgs, ... }:
           pkgs.mkShell {
-            buildInputs = with pkgs; [
-              codespell
-              jq
-              nixpkgs-fmt
-              python3
-              python3.pkgs.black
-              python3.pkgs.flake8
-              python3.pkgs.mypy
-              shellcheck
-              (terraform_1_0.withPlugins (p: [
-                p.hydra
-              ]))
-            ];
+            buildInputs = with pkgs;
+              [
+                codespell
+                jq
+                nixpkgs-fmt
+                python3
+                python3.pkgs.black
+                python3.pkgs.flake8
+                python3.pkgs.mypy
+                shellcheck
+                (terraform_1_0.withPlugins (p: [
+                  p.hydra
+                ]))
+              ];
           }
         );
     };
