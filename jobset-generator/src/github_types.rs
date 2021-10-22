@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::collections::BTreeMap;
 
 #[derive(Deserialize)]
 pub enum AuthorAssociation {
@@ -35,3 +36,5 @@ pub struct PullRequest {
     pub title: String,
     pub user: User,
 }
+
+pub type PullRequests = BTreeMap<String, PullRequest>;
