@@ -5,6 +5,10 @@ use std::collections::BTreeMap;
 pub enum AuthorAssociation {
     #[serde(rename = "MEMBER")]
     Member,
+    #[serde(rename = "CONTRIBUTOR")]
+    Contributor,
+    #[serde(rename = "NONE")]
+    None,
     // !!! Flesh out this structure so we don't get errors at run time
 }
 
