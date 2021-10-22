@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
+/// https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
 #[derive(Deserialize)]
 pub enum AuthorAssociation {
     #[serde(rename = "MEMBER")]
@@ -9,7 +10,16 @@ pub enum AuthorAssociation {
     Contributor,
     #[serde(rename = "NONE")]
     None,
-    // !!! Flesh out this structure so we don't get errors at run time
+    #[serde(rename = "COLLABORATOR")]
+    Collaborator,
+    #[serde(rename = "FIRST_TIMER")]
+    FirstTimer,
+    #[serde(rename = "FIRST_TIME_CONTRIBUTOR")]
+    FirstTimeContributor,
+    #[serde(rename = "MANNEQUIN")]
+    Mannequin,
+    #[serde(rename = "OWNER")]
+    Owner,
 }
 
 #[derive(Deserialize)]
