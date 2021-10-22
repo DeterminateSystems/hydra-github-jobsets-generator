@@ -1,29 +1,29 @@
 use std::collections::BTreeMap;
 
-pub struct HydraJobInput {
+pub struct HydraJobsetInput {
     pub r#type: String,
     pub value: String,
     pub emailresponsible: bool,
 }
 
-pub type JobInputCollection = BTreeMap<String, HydraJobInput>;
+pub type JobInputCollection = BTreeMap<String, HydraJobsetInput>;
 
-pub struct HydraJobLegacy {
+pub struct HydraJobsetLegacy {
     pub nixexprinput: String,
     pub nixexprpath: String,
     pub inputs: JobInputCollection,
 }
 
-pub struct HydraJobFlake {
+pub struct HydraJobsetFlake {
     pub flake_uri: String,
 }
 
 pub enum HydraInputDefinition {
-    Legacy(HydraJobLegacy),
-    Flake(HydraJobFlake),
+    Legacy(HydraJobsetLegacy),
+    Flake(HydraJobsetFlake),
 }
 
-pub struct HydraJob {
+pub struct HydraJobset {
     pub enabled: bool,
     pub hidden: bool,
     pub description: String,
@@ -35,7 +35,7 @@ pub struct HydraJob {
     pub definition: HydraInputDefinition,
 }
 
-pub struct FlattenedHydraJob {
+pub struct FlattenedHydraJobset {
     pub enabled: bool,
     pub hidden: bool,
     pub description: String,
@@ -50,9 +50,9 @@ pub struct FlattenedHydraJob {
     pub inputs: Option<JobInputCollection>,
 }
 
-impl HydraJob {
-    pub fn flatten(self) -> FlattenedHydraJob {
-        let mut job = FlattenedHydraJob {
+impl HydraJobset {
+    pub fn flatten(self) -> FlattenedHydraJobset {
+        let mut job = FlattenedHydraJobset {
             enabled: self.enabled,
             hidden: self.hidden,
             description: self.description,
@@ -81,3 +81,5 @@ impl HydraJob {
         job
     }
 }
+
+pub type HydraJobsets = BTreeMap<String, FlattenedHydraJobset>;
