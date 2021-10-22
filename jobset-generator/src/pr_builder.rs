@@ -1,13 +1,17 @@
+use std::fs::File;
+use std::io::BufReader;
+
 use crate::config::JobConfig;
 use crate::github_types::{PullRequest, PullRequests};
 use crate::hydra_types::{
     HydraInputDefinition, HydraJobset, HydraJobsetFlake, HydraJobsetInput, HydraJobsetLegacy,
     HydraJobsets,
 };
+use crate::Result;
 
-trait MakeDefinition: Fn(JobConfig, PullRequest) -> HydraInputDefinition + Clone {}
+pub type MakeDefinition = dyn Fn(JobConfig, PullRequest) -> HydraInputDefinition;
 
-fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
+pub fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
     HydraInputDefinition::Flake(HydraJobsetFlake {
         flake_uri: format!(
             "git+ssh://{}?{}",
@@ -17,7 +21,7 @@ fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraInputD
     })
 }
 
-fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
+pub fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
     let mut inputs = job_config.input_template;
     inputs.insert(
         String::from("src"),
@@ -35,13 +39,16 @@ fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraInputD
     })
 }
 
-fn build_pr_jobsets(
-    pull_requests: PullRequests,
+pub fn build_pr_jobsets(
+    pull_requests_path: String,
     job_config: JobConfig,
-    make_definition: impl MakeDefinition,
-) -> HydraJobsets {
-    let mut jobs = HydraJobsets::new();
+    make_definition: &MakeDefinition,
+) -> Result<HydraJobsets> {
+    let pull_requests_file = File::open(pull_requests_path)?;
+    let pull_requests_rdr = BufReader::new(pull_requests_file);
+    let pull_requests: PullRequests = serde_json::from_reader(pull_requests_rdr)?;
 
+    let mut jobs = HydraJobsets::new();
     for (key, pr) in pull_requests {
         if let Some(job) = make_job(pr, job_config.clone(), make_definition.clone()) {
             let flattened_job = job.flatten();
@@ -49,14 +56,14 @@ fn build_pr_jobsets(
         }
     }
 
-    jobs
+    Ok(jobs)
 }
 
 // TODO: does this really need to return an option?
 fn make_job(
     pr: PullRequest,
     job_config: JobConfig,
-    make_definition: impl MakeDefinition,
+    make_definition: &MakeDefinition,
 ) -> Option<HydraJobset> {
     let job_config_clone = job_config.clone();
 

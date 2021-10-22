@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use std::collections::BTreeMap;
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 pub struct HydraJobsetInput {
     pub r#type: String,
     pub value: String,
@@ -36,6 +38,7 @@ pub struct HydraJobset {
     pub definition: HydraInputDefinition,
 }
 
+#[derive(Debug, Serialize)]
 pub struct FlattenedHydraJobset {
     pub enabled: bool,
     pub hidden: bool,

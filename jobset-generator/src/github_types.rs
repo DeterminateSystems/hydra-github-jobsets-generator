@@ -27,6 +27,7 @@ pub struct Branch {
     pub user: User,
 }
 
+#[derive(Deserialize)]
 pub struct PullRequest {
     pub author_association: AuthorAssociation,
     pub base: Branch,
