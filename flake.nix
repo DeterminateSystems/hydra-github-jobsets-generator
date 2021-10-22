@@ -43,6 +43,9 @@
                 python3.pkgs.flake8
                 python3.pkgs.mypy
                 shellcheck
+                cargo
+                rustfmt
+                clippy
                 (terraform_1_0.withPlugins (p: [
                   p.hydra
                 ]))
