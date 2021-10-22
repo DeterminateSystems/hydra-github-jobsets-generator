@@ -28,10 +28,10 @@ pub struct Branch {
 
 pub struct PullRequest {
     pub author_association: AuthorAssociation,
-    pub base: String,
-    pub head: String,
+    pub base: Branch,
+    pub head: Branch,
     pub html_url: String,
     pub number: u64,
     pub title: String,
-    pub user: String,
+    pub user: User,
 }
