@@ -1,13 +1,13 @@
 use crate::hydra_types;
 
-struct JobConfig {
-    checkinterval: u64,
-    emailoverride: String,
-    enableemail: bool,
-    keepnr: u64,
-    schedulingshares: u64,
-    input_template: hydra_types::JobInputCollection,
-    email_responsible: bool,
-    inputname: String,
-    inputpath: String,
+pub struct JobConfig {
+    pub checkinterval: u64,
+    pub emailoverride: String,
+    pub enableemail: bool,
+    pub keepnr: u64,
+    pub schedulingshares: u64,
+    pub input_template: hydra_types::JobInputCollection,
+    pub email_responsible: bool,
+    pub inputname: String,
+    pub inputpath: String,
 }
