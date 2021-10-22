@@ -9,6 +9,6 @@ resource "hydra_project" "pr-example" {
   declarative {
     file  = ".hydra/project.json"
     type  = "git"
-    value = "https://github.com/DeterminateSystems/hydra-github-jobsets-example-project.git main"
+    value = "https://github.com/DeterminateSystems/hydra-github-jobsets-example-project.git initial-implementation"
   }
 }
