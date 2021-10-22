@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+#[derive(Clone)]
 pub struct HydraJobsetInput {
     pub r#type: String,
     pub value: String,

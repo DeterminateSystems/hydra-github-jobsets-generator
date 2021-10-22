@@ -1,5 +1,6 @@
 use crate::hydra_types::JobInputCollection;
 
+#[derive(Clone)]
 pub struct JobConfig {
     pub checkinterval: u64,
     pub emailoverride: String,

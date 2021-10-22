@@ -1,12 +1,11 @@
 use crate::config::JobConfig;
 use crate::github_types::{PullRequest, PullRequests};
 use crate::hydra_types::{
-    FlattenedHydraJobset, HydraInputDefinition, HydraJobset, HydraJobsetFlake, HydraJobsetInput,
-    HydraJobsetLegacy, HydraJobsets, JobInputCollection,
+    HydraInputDefinition, HydraJobset, HydraJobsetFlake, HydraJobsetInput, HydraJobsetLegacy,
+    HydraJobsets,
 };
-use serde_json;
-use std::collections::BTreeMap;
-use std::path::Path;
+
+trait MakeDefinition: Fn(JobConfig, PullRequest) -> HydraInputDefinition + Clone {}
 
 fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
     HydraInputDefinition::Flake(HydraJobsetFlake {
@@ -19,8 +18,18 @@ fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraInputD
 }
 
 fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraInputDefinition {
+    let mut inputs = job_config.input_template;
+    inputs.insert(
+        String::from("src"),
+        HydraJobsetInput {
+            r#type: String::from("git"),
+            value: format!("{} {}", pr.head.repo.git_url, pr.head.sha),
+            emailresponsible: job_config.email_responsible,
+        },
+    );
+
     HydraInputDefinition::Legacy(HydraJobsetLegacy {
-        inputs: job_config.input_template,
+        inputs,
         nixexprinput: job_config.inputname,
         nixexprpath: job_config.inputpath,
     })
@@ -29,54 +38,37 @@ fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraInputD
 fn build_pr_jobsets(
     pull_requests: PullRequests,
     job_config: JobConfig,
-    make_definition: (),
+    make_definition: impl MakeDefinition,
 ) -> HydraJobsets {
     let mut jobs = HydraJobsets::new();
+
+    for (key, pr) in pull_requests {
+        if let Some(job) = make_job(pr, job_config.clone(), make_definition.clone()) {
+            let flattened_job = job.flatten();
+            jobs.insert(format!("pr-{}", key), flattened_job);
+        }
+    }
 
     jobs
 }
 
-/*
-import urllib.parse
+// TODO: does this really need to return an option?
+fn make_job(
+    pr: PullRequest,
+    job_config: JobConfig,
+    make_definition: impl MakeDefinition,
+) -> Option<HydraJobset> {
+    let job_config_clone = job_config.clone();
 
-
-MakeDefinition = Callable[[JobConfig, PullRequest], HydraInputDefinition]
-
-
-
-def build_pr_jobsets(
-    pull_request_json: str, job_config: JobConfig, make_definition
-) -> Dict[str, FlattenedHydraJobset]:
-    prs: Dict[str, PullRequest] = json.load(open(pull_request_json))
-
-    jobs: Dict[str, FlattenedHydraJobset] = {}
-    for (prkey, pr) in prs.items():
-        job = make_job(pr, job_config, make_definition)
-        if job is not None:
-            jobs[f"pr-{prkey}"] = flatten_hydra_job(job)
-
-    return jobs
-
-
-def make_job(
-    pr: PullRequest, job_config: JobConfig, make_definition: MakeDefinition
-) -> Optional[HydraJobset]:
-
-    job = HydraJobset(
-        enabled=True,
-        hidden=False,
-        description="{title} by {username}: {link}".format(
-            title=pr["title"],
-            username=pr["user"]["login"],
-            link=pr["html_url"],
-        ),
-        checkinterval=job_config["checkinterval"],
-        schedulingshares=job_config["schedulingshares"],
-        enableemail=job_config["enableemail"],
-        emailoverride=job_config["emailoverride"],
-        keepnr=job_config["keepnr"],
-        definition=make_definition(job_config, pr),
-    )
-
-    return job
-*/
+    Some(HydraJobset {
+        enabled: true,
+        hidden: false,
+        description: format!("{} by {}: {}", pr.title, pr.user.login, pr.html_url),
+        checkinterval: job_config.checkinterval,
+        schedulingshares: job_config.schedulingshares,
+        enableemail: job_config.enableemail,
+        emailoverride: job_config.emailoverride,
+        keepnr: job_config.keepnr,
+        definition: make_definition(job_config_clone, pr),
+    })
+}
