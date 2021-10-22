@@ -11,21 +11,25 @@ pub struct HydraJobsetInput {
 
 pub type JobInputCollection = BTreeMap<String, HydraJobsetInput>;
 
+#[derive(Clone)]
 pub struct HydraJobsetLegacy {
     pub nixexprinput: String,
     pub nixexprpath: String,
     pub inputs: JobInputCollection,
 }
 
+#[derive(Clone)]
 pub struct HydraJobsetFlake {
     pub flake_uri: String,
 }
 
+#[derive(Clone)]
 pub enum HydraInputDefinition {
     Legacy(HydraJobsetLegacy),
     Flake(HydraJobsetFlake),
 }
 
+#[derive(Clone)]
 pub struct HydraJobset {
     pub enabled: bool,
     pub hidden: bool,
@@ -87,3 +91,110 @@ impl HydraJobset {
 }
 
 pub type HydraJobsets = BTreeMap<String, FlattenedHydraJobset>;
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeMap;
+
+    use crate::hydra_types::HydraJobsetFlake;
+
+    use super::{HydraInputDefinition, HydraJobset, HydraJobsetLegacy};
+
+    #[test]
+    fn hydrajobset_flatten_legacy() {
+        let defn = HydraJobsetLegacy {
+            nixexprinput: String::from("asdf"),
+            nixexprpath: String::from("fdsa"),
+            inputs: BTreeMap::new(),
+        };
+        let jobset = HydraJobset {
+            enabled: true,
+            hidden: false,
+            description: String::from("Some description"),
+            checkinterval: 299,
+            schedulingshares: 2,
+            enableemail: false,
+            emailoverride: String::from(""),
+            keepnr: 5,
+            definition: HydraInputDefinition::Legacy(defn.clone()),
+        };
+
+        let flat = jobset.clone().flatten();
+
+        assert_eq!(
+            (
+                jobset.enabled,
+                jobset.hidden,
+                jobset.description,
+                jobset.checkinterval,
+                jobset.schedulingshares,
+                jobset.enableemail,
+                jobset.emailoverride,
+                jobset.keepnr,
+            ),
+            (
+                flat.enabled,
+                flat.hidden,
+                flat.description,
+                flat.checkinterval,
+                flat.schedulingshares,
+                flat.enableemail,
+                flat.emailoverride,
+                flat.keepnr,
+            )
+        );
+
+        assert_eq!(flat.nixexprinput, Some(defn.nixexprinput));
+        assert_eq!(flat.nixexprpath, Some(defn.nixexprpath));
+        assert_eq!(flat.flake, None);
+        assert!(flat.inputs.is_some() && flat.inputs.unwrap().is_empty());
+    }
+
+    #[test]
+    fn hydrajobset_flatten_flake() {
+        let defn = HydraJobsetFlake {
+            flake_uri: String::from("fake/uri"),
+        };
+        let jobset = HydraJobset {
+            enabled: false,
+            hidden: true,
+            description: String::from("Another description"),
+            checkinterval: 298,
+            schedulingshares: 5,
+            enableemail: true,
+            emailoverride: String::from("asdf@asdf.asdf"),
+            keepnr: 9,
+            definition: HydraInputDefinition::Flake(defn.clone()),
+        };
+
+        let flat = jobset.clone().flatten();
+
+        assert_eq!(
+            (
+                jobset.enabled,
+                jobset.hidden,
+                jobset.description,
+                jobset.checkinterval,
+                jobset.schedulingshares,
+                jobset.enableemail,
+                jobset.emailoverride,
+                jobset.keepnr,
+            ),
+            (
+                flat.enabled,
+                flat.hidden,
+                flat.description,
+                flat.checkinterval,
+                flat.schedulingshares,
+                flat.enableemail,
+                flat.emailoverride,
+                flat.keepnr,
+            )
+        );
+
+        assert_eq!(flat.nixexprinput, None);
+        assert_eq!(flat.nixexprpath, None);
+        assert_eq!(flat.flake, Some(defn.flake_uri));
+        assert!(flat.inputs.is_none());
+    }
+}
