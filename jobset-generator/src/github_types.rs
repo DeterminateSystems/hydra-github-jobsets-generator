@@ -37,7 +37,7 @@ pub struct PullRequest {
     pub base: Branch,
     pub head: Branch,
     pub html_url: String,
-    pub number: u64,
+    pub number: String,
     pub title: String,
     pub user: User,
 }
