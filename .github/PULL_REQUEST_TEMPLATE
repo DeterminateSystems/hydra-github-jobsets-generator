@@ -1,0 +1,14 @@
+##### Description
+
+<!--- Please include a short description of what your PR does and / or the
+motivation behind it --->
+
+##### Checklist
+
+<!--- Use `nix-shell` for a shell with all the required dependencies for
+building / formatting / testing / etc. --->
+
+- [ ] Checked the rust with `cargo build`, `cargo test`, `cargo fmt`, and `cargo clippy` in the jobset-generator directory
+- [ ] Verifed the example configuration still parses with `terraform init && terraform validate` in the terraform directory
+- [ ] Added or updated relevant tests (leave unchecked if not applicable)
+- [ ] Added or updated relevant documentation (leave unchecked if not applicable)
