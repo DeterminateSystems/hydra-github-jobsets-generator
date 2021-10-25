@@ -42,7 +42,7 @@ In your project's repository, create a file at `.hydra/project.json`. This conta
     "emailoverride": "",
     "keepnr": 3,
     "inputs": {
-        "src": {
+        "generator_config": {
             "type": "git",
             "value": "https://github.com/YOURORGNAME/YOURREPONAME.git main",
             "emailresponsible": false
@@ -68,18 +68,20 @@ In your project's repository, create a file at `.hydra/project.json`. This conta
 
 Take care to replace both `YOURORGNAME` and `YOURREPONAME` with your GitHub organization and repo's names.
 
-### Configuring your repository: inputs
+### Configuring your repository
 
-Then, create a file at `.hydra/inputs.json`, and include all of the other Hydra inputs you want to use.
+Then, create a file at `.hydra/config.json`, and include all of the other Hydra inputs you want to use.
 
-For example, if your project depends on Nixpkgs, write the following to `.hydra/inputs.json`:
+For example, if your project depends on Nixpkgs, write the following to `.hydra/config.json`:
 
 ```json
 {
-    "nixpkgs": {
-        "type": "git",
-        "value": "git://github.com/NixOS/nixpkgs.git nixos-unstable-small",
-        "emailresponsible": false
+    "inputs": {
+        "nixpkgs": {
+            "type": "git",
+            "value": "git://github.com/NixOS/nixpkgs.git nixos-unstable-small",
+            "emailresponsible": false
+        }
     }
 }
 ```
