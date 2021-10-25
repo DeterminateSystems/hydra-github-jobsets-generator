@@ -18,7 +18,7 @@ jobs:
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
     - uses: codespell-project/codespell-problem-matcher@v1
     - name: Check Spelling
-      run: nix develop --command codespell --ignore-words-list pullrequest .
+      run: nix develop --command codespell --ignore-words-list crate,pullrequest,pullrequests .
 
   Terraform:
     runs-on: ubuntu-latest
@@ -35,23 +35,20 @@ jobs:
       - name: Terraform validate
         run: nix-shell --run 'terraform -chdir=./terraform validate -no-color'
 
-  Python:
+  Rust:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v14
-      with:
-        install_url: https://nixos-nix-install-tests.cachix.org/serve/vij683ly7sl95nnhb67bdjjfabclr85m/install
-        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
-        extra_nix_config: |
-          experimental-features = nix-command flakes
-          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - name: Check Mypy
-      run: nix develop --command mypy .
-    - name: Check Flake8
-      run: nix develop --command flake8 --max-line-length 89 .
-    - name: Check Black
-      run: nix develop --command black .
+    - name: Check rustfmt
+      working-directory: jobset-generator/
+      run: nix-shell ../shell.nix --run 'cargo fmt -- --check'
+    - name: Check Clippy
+      working-directory: jobset-generator/
+      run: cargo clippy
+    - name: Check tests
+      working-directory: jobset-generator/
+      run: nix-shell ../shell.nix --run 'cargo test'
 
 
   Nix:

@@ -1,4 +1,4 @@
-{ nixpkgs, generator, pull_requests, src } @ args:
+{ nixpkgs, generator, pull_requests, src, inputPath ? "default.nix" } @ args:
 let
   pkgs = import nixpkgs { };
   jobset_generator = import (generator + "/jobset-generator") { inherit pkgs; };
@@ -10,6 +10,6 @@ in
         buildInputs = [ jobset_generator ];
         template = src + "/.hydra/inputs.json";
       } ''
-      jobset_generator --template $template ${pull_requests} > $out
+      jobset_generator --template $template ${pull_requests} --input_path "${inputPath}" > $out
     '';
 }

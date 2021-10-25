@@ -1,6 +1,10 @@
 { pkgs }:
-pkgs.poetry2nix.mkPoetryApplication {
-  projectDir = ./src;
+pkgs.rustPlatform.buildRustPackage rec {
+  pname = "jobset-generator";
+  version = "unreleased";
+
+  src = ./.;
+  cargoLock.lockFile = src + "/Cargo.lock";
 
   meta = with pkgs.lib; {
     homepage = "https://github.com/DeterminateSystems/hydra-github-project";

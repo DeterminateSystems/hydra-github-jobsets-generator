@@ -35,13 +35,12 @@
           pkgs.mkShell {
             buildInputs = with pkgs;
               [
+                cargo
+                clippy
                 codespell
                 jq
                 nixpkgs-fmt
-                python3
-                python3.pkgs.black
-                python3.pkgs.flake8
-                python3.pkgs.mypy
+                rustfmt
                 shellcheck
                 (terraform_1_0.withPlugins (p: [
                   p.hydra
