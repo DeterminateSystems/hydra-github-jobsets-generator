@@ -10,6 +10,6 @@ in
         buildInputs = [ jobset_generator ];
         template = src + "/.hydra/config.json";
       } ''
-      jobset_generator ${pull_requests} "$template"  > $out
+      jobset-generator ${pull_requests} "$template"  > $out
     '';
 }
