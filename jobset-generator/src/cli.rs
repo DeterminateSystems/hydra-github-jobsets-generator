@@ -1,6 +1,6 @@
-use serde;
-use serde::{Deserialize, Serialize};
 use std::{fs::File, io::BufReader};
+
+use serde::{Deserialize, Serialize};
 use structopt::StructOpt;
 
 use crate::Result;
