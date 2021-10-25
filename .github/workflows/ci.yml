@@ -18,7 +18,7 @@ jobs:
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
     - uses: codespell-project/codespell-problem-matcher@v1
     - name: Check Spelling
-      run: nix develop --command codespell --ignore-words-list pullrequest .
+      run: nix develop --command codespell --ignore-words-list crate,pullrequest,pullrequests .
 
   Terraform:
     runs-on: ubuntu-latest
