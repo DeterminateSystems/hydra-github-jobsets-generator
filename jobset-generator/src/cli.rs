@@ -99,7 +99,7 @@ pub fn cli() -> Result<()> {
     };
 
     let jobsets = build_pr_jobsets(args.pull_requests_file, job_config, &make_definition)?;
-    let json = serde_json::to_string(&jobsets)?;
+    let json = serde_json::to_string_pretty(&jobsets)?;
 
     println!("{}", json);
 
