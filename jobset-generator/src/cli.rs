@@ -1,6 +1,6 @@
-use std::{fs::File, io::BufReader};
 use serde;
 use serde::{Deserialize, Serialize};
+use std::{fs::File, io::BufReader};
 use structopt::StructOpt;
 
 use crate::Result;
@@ -16,8 +16,8 @@ struct Args {
     config_file: String,
 }
 
-#[derive(Serialize,Deserialize)]
-#[serde(deny_unknown_fields)] 
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct GeneratorConfig {
     #[serde(default)]
     flakes: bool,
@@ -46,7 +46,7 @@ struct GeneratorConfig {
     input_path: String,
 
     #[serde(default)]
-    inputs: JobInputCollection
+    inputs: JobInputCollection,
 }
 
 fn default_check_interval() -> u64 {
@@ -112,6 +112,7 @@ mod tests {
 
     #[test]
     fn can_decode_empty_config() {
-        let _cfg: GeneratorConfig = serde_json::from_str("{}").expect("Failed to decode all-defaults");
+        let _cfg: GeneratorConfig =
+            serde_json::from_str("{}").expect("Failed to decode all-defaults");
     }
 }
