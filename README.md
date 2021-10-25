@@ -42,7 +42,7 @@ In your project's repository, create a file at `.hydra/project.json`. This conta
     "emailoverride": "",
     "keepnr": 3,
     "inputs": {
-        "src": {
+        "generator_config": {
             "type": "git",
             "value": "https://github.com/YOURORGNAME/YOURREPONAME.git main",
             "emailresponsible": false
