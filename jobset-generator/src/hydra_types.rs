@@ -52,10 +52,12 @@ pub struct FlattenedHydraJobset {
     pub enableemail: bool,
     pub emailoverride: String,
     pub keepnr: u64,
-    pub flake: Option<String>,
+    pub flake: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nixexprinput: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nixexprpath: Option<String>,
-    pub inputs: Option<JobInputCollection>,
+    pub inputs: JobInputCollection,
 }
 
 impl HydraJobset {
@@ -69,18 +71,18 @@ impl HydraJobset {
             enableemail: self.enableemail,
             emailoverride: self.emailoverride,
             keepnr: self.keepnr,
-            flake: None,
-            inputs: None,
+            flake: String::from(""),
+            inputs: BTreeMap::new(),
             nixexprinput: None,
             nixexprpath: None,
         };
 
         match self.definition {
             HydraInputDefinition::Flake(flake) => {
-                job.flake = Some(flake.flake_uri);
+                job.flake = flake.flake_uri;
             }
             HydraInputDefinition::Legacy(legacy) => {
-                job.inputs = Some(legacy.inputs);
+                job.inputs = legacy.inputs;
                 job.nixexprinput = Some(legacy.nixexprinput);
                 job.nixexprpath = Some(legacy.nixexprpath);
             }
@@ -120,6 +122,7 @@ mod tests {
         };
 
         let flat = jobset.clone().flatten();
+        let json = serde_json::to_string_pretty(&flat).unwrap();
 
         assert_eq!(
             (
@@ -146,8 +149,26 @@ mod tests {
 
         assert_eq!(flat.nixexprinput, Some(defn.nixexprinput));
         assert_eq!(flat.nixexprpath, Some(defn.nixexprpath));
-        assert_eq!(flat.flake, None);
-        assert!(flat.inputs.is_some() && flat.inputs.unwrap().is_empty());
+        assert_eq!(flat.flake, "");
+        assert!(flat.inputs.is_empty());
+
+        assert_eq!(
+            json,
+            r#"{
+  "enabled": true,
+  "hidden": false,
+  "description": "Some description",
+  "checkinterval": 299,
+  "schedulingshares": 2,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 5,
+  "flake": "",
+  "nixexprinput": "asdf",
+  "nixexprpath": "fdsa",
+  "inputs": {}
+}"#
+        );
     }
 
     #[test]
@@ -168,6 +189,7 @@ mod tests {
         };
 
         let flat = jobset.clone().flatten();
+        let json = serde_json::to_string_pretty(&flat).unwrap();
 
         assert_eq!(
             (
@@ -194,7 +216,23 @@ mod tests {
 
         assert_eq!(flat.nixexprinput, None);
         assert_eq!(flat.nixexprpath, None);
-        assert_eq!(flat.flake, Some(defn.flake_uri));
-        assert!(flat.inputs.is_none());
+        assert_eq!(flat.flake, defn.flake_uri);
+        assert!(flat.inputs.is_empty());
+
+        assert_eq!(
+            json,
+            r#"{
+  "enabled": false,
+  "hidden": true,
+  "description": "Another description",
+  "checkinterval": 298,
+  "schedulingshares": 5,
+  "enableemail": true,
+  "emailoverride": "asdf@asdf.asdf",
+  "keepnr": 9,
+  "flake": "fake/uri",
+  "inputs": {}
+}"#
+        );
     }
 }
