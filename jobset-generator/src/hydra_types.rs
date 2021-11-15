@@ -42,6 +42,8 @@ pub struct HydraJobset {
     pub definition: HydraInputDefinition,
 }
 
+// XXX: This struct is a representation that Hydra's underlying database schema understands, **NOT**
+// its REST API. Changes made to reflect what the API wants **WILL NOT WORK AS EXPECTED**.
 #[derive(Debug, Serialize)]
 pub struct FlattenedHydraJobset {
     pub enabled: bool,
