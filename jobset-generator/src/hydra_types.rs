@@ -57,7 +57,10 @@ pub struct FlattenedHydraJobset {
     pub nixexprinput: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nixexprpath: Option<String>,
-    pub inputs: JobInputCollection,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub inputs: Option<JobInputCollection>,
+    #[serde(rename = "type")]
+    pub ty: u64,
 }
 
 impl HydraJobset {
@@ -72,17 +75,19 @@ impl HydraJobset {
             emailoverride: self.emailoverride,
             keepnr: self.keepnr,
             flake: String::from(""),
-            inputs: BTreeMap::new(),
+            inputs: None,
             nixexprinput: None,
             nixexprpath: None,
+            ty: 0,
         };
 
         match self.definition {
             HydraInputDefinition::Flake(flake) => {
                 job.flake = flake.flake_uri;
+                job.ty = 1;
             }
             HydraInputDefinition::Legacy(legacy) => {
-                job.inputs = legacy.inputs;
+                job.inputs = Some(legacy.inputs);
                 job.nixexprinput = Some(legacy.nixexprinput);
                 job.nixexprpath = Some(legacy.nixexprpath);
             }
@@ -150,7 +155,7 @@ mod tests {
         assert_eq!(flat.nixexprinput, Some(defn.nixexprinput));
         assert_eq!(flat.nixexprpath, Some(defn.nixexprpath));
         assert_eq!(flat.flake, "");
-        assert!(flat.inputs.is_empty());
+        assert!(flat.inputs.is_some() && flat.inputs.unwrap().is_empty());
 
         assert_eq!(
             json,
@@ -166,7 +171,8 @@ mod tests {
   "flake": "",
   "nixexprinput": "asdf",
   "nixexprpath": "fdsa",
-  "inputs": {}
+  "inputs": {},
+  "type": 0
 }"#
         );
     }
@@ -217,7 +223,7 @@ mod tests {
         assert_eq!(flat.nixexprinput, None);
         assert_eq!(flat.nixexprpath, None);
         assert_eq!(flat.flake, defn.flake_uri);
-        assert!(flat.inputs.is_empty());
+        assert!(flat.inputs.is_none());
 
         assert_eq!(
             json,
@@ -231,7 +237,7 @@ mod tests {
   "emailoverride": "asdf@asdf.asdf",
   "keepnr": 9,
   "flake": "fake/uri",
-  "inputs": {}
+  "type": 1
 }"#
         );
     }
