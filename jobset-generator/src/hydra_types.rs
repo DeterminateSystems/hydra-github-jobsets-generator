@@ -42,6 +42,8 @@ pub struct HydraJobset {
     pub definition: HydraInputDefinition,
 }
 
+// XXX: This struct is a representation that Hydra's underlying database schema understands, **NOT**
+// its REST API. Changes made to reflect what the API wants **WILL NOT WORK AS EXPECTED**.
 #[derive(Debug, Serialize)]
 pub struct FlattenedHydraJobset {
     pub enabled: bool,
@@ -52,10 +54,15 @@ pub struct FlattenedHydraJobset {
     pub enableemail: bool,
     pub emailoverride: String,
     pub keepnr: u64,
-    pub flake: Option<String>,
+    pub flake: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nixexprinput: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub nixexprpath: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub inputs: Option<JobInputCollection>,
+    #[serde(rename = "type")]
+    pub ty: u64,
 }
 
 impl HydraJobset {
@@ -69,15 +76,17 @@ impl HydraJobset {
             enableemail: self.enableemail,
             emailoverride: self.emailoverride,
             keepnr: self.keepnr,
-            flake: None,
+            flake: String::from(""),
             inputs: None,
             nixexprinput: None,
             nixexprpath: None,
+            ty: 0,
         };
 
         match self.definition {
             HydraInputDefinition::Flake(flake) => {
-                job.flake = Some(flake.flake_uri);
+                job.flake = flake.flake_uri;
+                job.ty = 1;
             }
             HydraInputDefinition::Legacy(legacy) => {
                 job.inputs = Some(legacy.inputs);
@@ -120,6 +129,7 @@ mod tests {
         };
 
         let flat = jobset.clone().flatten();
+        let json = serde_json::to_string_pretty(&flat).unwrap();
 
         assert_eq!(
             (
@@ -146,8 +156,27 @@ mod tests {
 
         assert_eq!(flat.nixexprinput, Some(defn.nixexprinput));
         assert_eq!(flat.nixexprpath, Some(defn.nixexprpath));
-        assert_eq!(flat.flake, None);
+        assert_eq!(flat.flake, "");
         assert!(flat.inputs.is_some() && flat.inputs.unwrap().is_empty());
+
+        assert_eq!(
+            json,
+            r#"{
+  "enabled": true,
+  "hidden": false,
+  "description": "Some description",
+  "checkinterval": 299,
+  "schedulingshares": 2,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 5,
+  "flake": "",
+  "nixexprinput": "asdf",
+  "nixexprpath": "fdsa",
+  "inputs": {},
+  "type": 0
+}"#
+        );
     }
 
     #[test]
@@ -168,6 +197,7 @@ mod tests {
         };
 
         let flat = jobset.clone().flatten();
+        let json = serde_json::to_string_pretty(&flat).unwrap();
 
         assert_eq!(
             (
@@ -194,7 +224,23 @@ mod tests {
 
         assert_eq!(flat.nixexprinput, None);
         assert_eq!(flat.nixexprpath, None);
-        assert_eq!(flat.flake, Some(defn.flake_uri));
+        assert_eq!(flat.flake, defn.flake_uri);
         assert!(flat.inputs.is_none());
+
+        assert_eq!(
+            json,
+            r#"{
+  "enabled": false,
+  "hidden": true,
+  "description": "Another description",
+  "checkinterval": 298,
+  "schedulingshares": 5,
+  "enableemail": true,
+  "emailoverride": "asdf@asdf.asdf",
+  "keepnr": 9,
+  "flake": "fake/uri",
+  "type": 1
+}"#
+        );
     }
 }
