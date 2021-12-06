@@ -52,7 +52,7 @@ pub fn build_pr_jobsets(
     for (key, pr) in pull_requests {
         if let Some(job) = make_job(pr, job_config.clone(), make_definition) {
             let flattened_job = job.flatten();
-            jobs.insert(format!("pr-{}", key), flattened_job);
+            jobs.insert(format!("{}", key), flattened_job);
         }
     }
 
