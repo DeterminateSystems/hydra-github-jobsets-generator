@@ -16,7 +16,7 @@ pub fn make_flake_definition(_job_config: JobConfig, pr: PullRequest) -> HydraIn
         flake_uri: format!(
             "git+ssh://{}?{}",
             pr.head.repo.ssh_url.replacen(":", "/", 1),
-            url_encoded_data::stringify(&[("ref", &pr.head.r#ref), ("rev", &pr.head.sha)])
+            url_encoded_data::stringify(&[("ref", &pr.head.r#ref)])
         ),
     })
 }
