@@ -54,7 +54,7 @@ In your project's repository, create a file at `.hydra/project.json`. This conta
         },
         "nixpkgs": {
             "type": "git",
-            "value": "git://github.com/NixOS/nixpkgs.git nixos-unstable-small",
+            "value": "https://github.com/NixOS/nixpkgs.git nixos-unstable-small",
             "emailresponsible": false
         },
         "pull_requests": {
