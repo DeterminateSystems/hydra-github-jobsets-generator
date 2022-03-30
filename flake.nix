@@ -42,7 +42,7 @@
                 nixpkgs-fmt
                 rustfmt
                 shellcheck
-                (terraform_1_0.withPlugins (p: [
+                (terraform_1.withPlugins (p: [
                   p.hydra
                 ]))
               ];
