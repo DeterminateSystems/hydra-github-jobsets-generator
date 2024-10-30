@@ -27,7 +27,7 @@ pub fn make_legacy_definition(job_config: JobConfig, pr: PullRequest) -> HydraIn
         job_config.inputname.clone(),
         HydraJobsetInput {
             r#type: String::from("git"),
-            value: format!("{} {}", pr.head.repo.git_url, pr.head.sha),
+            value: format!("{} {}", pr.head.repo.git_url, pr.head.r#ref),
             emailresponsible: job_config.email_responsible,
         },
     );
