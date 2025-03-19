@@ -42,7 +42,7 @@
                 nixpkgs-fmt
                 rustfmt
                 shellcheck
-                (terraform_1.withPlugins (p: [
+                (opentofu.withPlugins (p: [
                   p.hydra
                 ]))
               ];
